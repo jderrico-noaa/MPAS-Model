@@ -46,13 +46,15 @@ jobs:
         repo:       [ufs-community, MPAS-Dev]
         branch:     [gsl/develop, v8.3.0]
         build-type: [Release, Debug]
-        build-system: [cmake]
+        build-system: [make]
         exclude:
           - repo: MPAS-Dev
             branch: gsl/develop
           - repo: ufs-community
             branch: v8.3.0
-
+    defaults:
+      run:
+        shell: bash -el {0}
     env:
       fortran-compiler:  intel
       py-version:        3.11
