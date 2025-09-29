@@ -238,6 +238,55 @@ jobs:
         cd ${mpas_rt_ROOT}/MPAS-Model
         make gfortran CORE=atmosphere
 
+    ##########################################################################################
+    # Step 3: Fetch any data/files needed for MPAS runs.
+    ##########################################################################################
+    - name: Download MPAS data (grid info, IC and LBC files)
+      run: |
+        cd ${mpas_run_ROOT} && mkdir run_data && cd run_data
+        wget -q https://gsl.noaa.gov/${grid_dir}/${domain}.${res}.graph.info.part.${nproc}
+        wget -q -e robots=off -nH --cut-dirs N -nc -r -lX -A '*' -R 'catalog*' -I /thredds/fileServer/,/thredds/catalog/ \
+        https://gsl.noaa.gov/thredds/catalog/${case_dir}/${case_base}/${nml}.${code_base}.${domain}.${res}.${ic_source}.${yyyy}${mm}${dd}${hh}/case_files/catalog.html
+        mv thredds/fileServer/${case_dir}/${case_base}/${nml}.${code_base}.${domain}.${res}.${ic_source}.${yyyy}${mm}${dd}${hh}/case_files/* .
+        rm -rf thredds
+
+    - name: Download MPAS testing repository with runtime configurations.
+      run: |
+        cd ${mpas_run_ROOT}
+        git clone --recursive --branch main https://github.com/barlage/mpas_testcase.git
+
+    - name: Cache Thompson MP tables
+      id: cache-thompson-data
+      uses: actions/cache@v4
+      with:
+        path: /home/runner/thompson
+        key: cache-thompson-data-key
+
+    - name: Download Thompson MP tables
+      if: steps.cache-thompson-data.outputs.cache-hit != 'true'
+      run: |
+        cd ${runner_ROOT} && mkdir thompson && cd thompson
+        wget -q -e robots=off -nH --cut-dirs N -nc -r -lX -A '*' -R 'catalog*' -I /thredds/fileServer/,/thredds/catalog/ \
+        https://gsl.noaa.gov/thredds/catalog/${mpdata_dir}/thompson/catalog.html
+        mv thredds/fileServer/${mpdata_dir}/thompson/* .
+        rm -rf thredds
+
+    - name: Cache UGWD data
+      id: cache-ugw-data
+      uses: actions/cache@v4
+      with:
+        path: /home/runner/ugw
+        key: cache-ugw-data-key
+
+    - name: Download GWD data
+      if: steps.cache-ugw-data.outputs.cache-hit != 'true'
+      run: |
+        cd ${runner_ROOT} && mkdir ugw && cd ugw
+        wget -q -e robots=off -nH --cut-dirs N -nc -r -lX -A '*' -R 'catalog*' -I /thredds/fileServer/,/thredds/catalog/ \
+        https://gsl.noaa.gov/thredds/catalog/${mpdata_dir}/ugw/catalog.html
+        mv thredds/fileServer/${mpdata_dir}/ugw/* .
+        rm -rf thredds
+
     # - name: Setup environment
     #   run: |
     #     echo "FC=mpiifort" >> $GITHUB_ENV
