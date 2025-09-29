@@ -403,29 +403,3 @@ jobs:
       with:
         name: mpas-baselines-${{env.fortran-compiler}}-${{matrix.build-type}}-${{matrix.repo}}-${{matrix.physics}}
         path: /home/runner/artifact-${{env.fortran-compiler}}-${{matrix.build-type}}-${{matrix.repo}}-${{matrix.physics}}
-
-    # - name: Setup environment
-    #   run: |
-    #     echo "FC=mpiifort" >> $GITHUB_ENV
-    #     echo "CC=mpiicc"   >> $GITHUB_ENV
-    #     echo "PNETCDF=${PNETCDF}" >> $GITHUB_ENV
-    #     echo "PATH=${AUTOTOOLS}/bin:$PATH" >> $GITHUB_ENV
-    #     echo "LD_LIBRARY_PATH=${AUTOTOOLS}/lib:$LD_LIBRARY_PATH" >> $GITHUB_ENV
-    #     echo "PATH=${PNETCDF}/bin:$PATH" >> $GITHUB_ENV
-    #     echo "LD_LIBRARY_PATH=${PNETCDF}/lib:$LD_LIBRARY_PATH" >> $GITHUB_ENV
-
-    # - name: Build MPAS Standalone (make)
-    #   if: matrix.build-system == 'make'
-    #   run: |
-    #     cd ${driver_ROOT}/MPAS-Model/MPAS-Model
-    #     make intel-mpi CORE=init_atmosphere
-    #     make intel-mpi CORE=atmosphere
-
-    # - name: Build MPAS Standalone (cmake)
-    #   if: matrix.build-system == 'cmake'
-    #   run: |
-    #     cd ${driver_ROOT}/MPAS-Model/MPAS-Model
-    #     mkdir build
-    #     cd build
-    #     cmake -DMPAS_DOUBLE_PRECISION=OFF -DMPAS_CORES="init_atmosphere;atmosphere" ..
-    #     make -j8
