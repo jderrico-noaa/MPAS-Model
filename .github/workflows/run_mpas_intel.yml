@@ -287,6 +287,36 @@ jobs:
         mv thredds/fileServer/${mpdata_dir}/ugw/* .
         rm -rf thredds
 
+    ##########################################################################################
+    # Step 4a: Configure MPAS baseline runs
+    ##########################################################################################
+    - name: Create and populate run directory (baselines)
+      run: |
+        cd ${mpas_run_ROOT} && mkdir run_bl && cd run_bl
+        cp ${mpas_run_ROOT}/mpas_testcase/run_case/case_files/${nml_version}/${domain}/${ic_source}.${yyyy}${mm}${dd}${hh}/${{matrix.physics}}/* .
+        ln -sf ${mpas_bl_ROOT}/src/core_atmosphere/physics/physics_wrf/files/*.TBL .
+        ln -sf ${mpas_bl_ROOT}/src/core_atmosphere/physics/physics_wrf/files/*.DBL .
+        ln -sf ${mpas_bl_ROOT}/src/core_atmosphere/physics/physics_wrf/files/*DATA .
+        ln -sf ${mpas_bl_ROOT}/src/core_atmosphere/physics/physics_noahmp/parameters/NoahmpTable.TBL .
+        ln -sf ${mpas_run_ROOT}/run_data/${{steps.set_vars.outputs.init_file}} mpas.init.nc
+        ln -sf ${mpas_run_ROOT}/run_data/${domain}.${res}.graph.info.part.${nproc} graph.info.part.${nproc}
+        ln -sf /home/runner/MPAS-Model-BL/atmosphere_model .
+        ln -sf ${mpas_run_ROOT}/run_data/${{steps.set_vars.outputs.sst_file}} mpas.sfc_update.nc
+        ln -sf namelist.atmosphere.${{env.nml_suffix}} namelist.atmosphere
+
+    - name: Link lateral boundary condition file for regional MPAS.
+      if: env.domain == 'conus'
+      run: |
+        cd ${mpas_run_ROOT}/run_bl
+        ln -sf ${mpas_run_ROOT}/run_data/${{steps.set_vars.outputs.lbc_file}} mpas.lbc.nc
+
+    - name: Link Thompson MP data tables to run directory
+      if: contains(matrix.physics, 'convection_permitting')
+      run: |
+        cd ${mpas_run_ROOT}/run_bl
+        cp ${runner_ROOT}/thompson/* .
+
+        
     # - name: Setup environment
     #   run: |
     #     echo "FC=mpiifort" >> $GITHUB_ENV
