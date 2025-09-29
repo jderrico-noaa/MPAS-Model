@@ -46,6 +46,7 @@ jobs:
         repo:       [ufs-community, MPAS-Dev]
         branch:     [gsl/develop, v8.3.0]
         build-type: [Release, Debug]
+        build-system: [make]
         exclude:
           - repo: MPAS-Dev
             branch: gsl/develop
