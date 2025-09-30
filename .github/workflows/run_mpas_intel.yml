@@ -223,7 +223,7 @@ jobs:
         cd ${runner_ROOT}
         git clone --recursive --branch ${{matrix.branch}} https://github.com/${{matrix.repo}}/MPAS-Model.git MPAS-Model-BL
         cd ${mpas_bl_ROOT}
-        make intel-mpi CORE=atmosphere
+        make intel-mpi CORE=atmosphere DEBUG=true
 
     - name: Checkout and build MPAS standalone for baseline generation (Release)
       if: contains(matrix.build-type, 'Release')
