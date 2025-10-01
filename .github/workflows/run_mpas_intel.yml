@@ -368,6 +368,7 @@ jobs:
         pwd && ls -l
         mpiexec -np 1 ./atmosphere_model
         pwd && ls -l
+        cat *.out && *.err
 
     - name: Run MPAS (feature branch)
       run: |
